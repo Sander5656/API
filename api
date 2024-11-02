@@ -1,0 +1,39 @@
+<?php
+// Datos de conexión a la base de datos
+$host = 'b4ogxjpclwt26y70k5gq-mysql.services.clever-cloud.com'; // Obtén esto de Clever Cloud
+$db = 'b4ogxjpclwt26y70k5gq'; // Nombre de tu base de datos
+$user = 'uumtgeq1tnwb4iox'; // Usuario de la base de datos
+$pass = 'b4ogxjpclwt26y70k5gq'; // Contraseña del usuario
+$port = '3306'; // Normalmente 3306
+
+// Crear conexión
+$conn = new mysqli($host, $user, $pass, $db, $port);
+
+// Verificar conexión
+if ($conn->connect_error) {
+    die("Conexión fallida: " . $conn->connect_error);
+}
+
+// Manejar solicitudes POST
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $uid = $_POST['uid'];
+
+    // Evitar registros duplicados
+    $sqlCheck = "SELECT * FROM asistencia WHERE uid = '$uid'";
+    $result = $conn->query($sqlCheck);
+
+    if ($result->num_rows == 0) { // Si no existe el UID
+        $sql = "INSERT INTO asistencia (uid, fecha) VALUES ('$uid', NOW())";
+
+        if ($conn->query($sql) === TRUE) {
+            echo "Registro guardado correctamente";
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+    } else {
+        echo "Este UID ya ha sido registrado.";
+    }
+}
+
+$conn->close();
+?>
